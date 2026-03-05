@@ -102,6 +102,13 @@ export const Dashboard = ({
     xxs: generateLayoutForBreakpoint(),
   };
 
+const getMatchedSize = (w: number, h: number): string => {
+for (const [sizeName, dims] of Object.entries(LAYOUT_CONSTRAINTS.WIDGET_SIZES)) {
+if (dims.w === w && dims.h === h) return sizeName;
+}
+return "custom";
+};
+
   const handleLayoutChange = (currentLayout: any) => {
     if (!editMode) return;
 
@@ -118,7 +125,7 @@ export const Dashboard = ({
         return {
           ...original,
           position: { x: item.x, y: item.y, w: item.w, h: item.h },
-          size: sizeChanged ? "custom" : original.size,
+          size: sizeChanged ? getMatchedSize(item.w, item.h) : original.size,
         };
       })
       .filter((item: Widget | null): item is Widget => item !== null);
@@ -126,7 +133,7 @@ export const Dashboard = ({
     onLayoutChange(updated);
   };
 
-  const allSizes: string[] = ["small", "medium", "large", "default", "custom"];
+  const allSizes: string[] = ["small", "medium", "large", "custom"];
 
   return (
     <div
@@ -153,7 +160,8 @@ export const Dashboard = ({
         {layout
           .filter((w: Widget) => w?.id != null)
           .map((widget: Widget) => {
-            const currentSize = widget.size?.toLowerCase() || "default";
+            const matchedSize = getMatchedSize(widget.position.w, widget.position.h);
+            const currentSize = matchedSize;
 
             return (
               <div

@@ -63,14 +63,12 @@ const DashboardLayout = () => {
 
   const getSizeDimensions = (size: string) => {
     const dims = LAYOUT_CONSTRAINTS.WIDGET_SIZES[size?.toLowerCase() as keyof typeof LAYOUT_CONSTRAINTS.WIDGET_SIZES] 
-      || LAYOUT_CONSTRAINTS.WIDGET_SIZES.default;
     return clampWidgetSize(dims.w, dims.h);
   };
 
   const handleAddWidget = (widgetData: WidgetData) => {
     if (!widgetData.name?.trim() || !widgetData.component) return;
-
-    const size = widgetData.size || 'default';
+    const size = widgetData.size
     const dims = getSizeDimensions(size);
 
     const newItem: Widget = {
