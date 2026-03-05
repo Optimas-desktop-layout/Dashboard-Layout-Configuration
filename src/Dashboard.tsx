@@ -146,8 +146,8 @@ export const Dashboard = ({
         draggableHandle=".widget-header"
         isResizable={editMode}
         isDraggable={editMode}
-        preventCollision={true}
-        compactType={null}
+        preventCollision={false}
+        compactType={"vertical"}
         allowOverlap={false}
       >
         {layout
