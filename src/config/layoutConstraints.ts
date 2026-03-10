@@ -13,14 +13,14 @@ export const LAYOUT_CONSTRAINTS = {
   // Snap-to-grid enforcement
   SNAP_TO_GRID: true,
   PREVENT_COLLISION: true,
-  COMPACT_TYPE: null, 
+  COMPACT_TYPE: "vertical" as const,
   
   // Predefined Widget Sizes (in grid units)
   WIDGET_SIZES: {
     small: { w: 3, h: 6 },
     default: { w: 4, h: 8 },
     medium: { w: 4, h: 8 },
-    large: { w: 5, h: 9 },
+    large: { w: 6, h: 9 },
     custom: { w: 3, h: 6 },
   },
 } as const;
