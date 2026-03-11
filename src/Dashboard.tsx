@@ -253,8 +253,9 @@ export const Dashboard = ({
         isResizable={editMode}
         isDraggable={editMode}
         preventCollision={false}
-        compactType={"vertical"}
+        compactType="vertical"
         allowOverlap={false}
+        useCSSTransforms={false}
       >
         {layout
           .filter((w: Widget) => w?.id != null)

@@ -4,10 +4,7 @@ import { LineChart as MuiLineChart } from '@mui/x-charts/LineChart';
 import { PieChart as MuiPieChart } from '@mui/x-charts/PieChart';
 import { WidgetConfig } from '../types';
 
-/* ============================================================
-   SHARED HELPERS
-   ============================================================ */
-
+//helpers
 const Sparkline = ({
   data,
   color,
@@ -73,9 +70,7 @@ const MiniBar = ({ value, color }: { value: number; color: string }) => (
   </Box>
 );
 
-/* ============================================================
-   BAR CHART — MUI X Charts
-   ============================================================ */
+//Bar-chart
 
 const barXLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const barSalesData = [420, 630, 510, 780, 920, 860, 340];
@@ -111,9 +106,7 @@ export const BarChart = ({ config }: { config?: WidgetConfig }) => (
   </Box>
 );
 
-/* ============================================================
-   LINE CHART — MUI X Charts
-   ============================================================ */
+//line-chart
 
 const lineXLabels = [
   'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -168,9 +161,7 @@ export const LineChart = ({ config }: { config?: WidgetConfig }) => (
   </Box>
 );
 
-/* ============================================================
-   PIE CHART — MUI X Charts
-   ============================================================ */
+//pie-chart
 
 const pieData = [
   { id: 0, value: 4200, label: 'Electronics' },
@@ -217,9 +208,7 @@ export const PieChart = ({ config }: { config?: WidgetConfig }) => (
   </Box>
 );
 
-/* ============================================================
-   KPI WIDGET — Beautiful 2×2 gradient cards
-   ============================================================ */
+//KPI
 
 interface KpiItem {
   label: string;
@@ -319,7 +308,6 @@ export const KPI = ({ config: _config }: { config?: WidgetConfig }) => (
           },
         }}
       >
-        {/* Top row */}
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box>
             <Typography
@@ -365,7 +353,6 @@ export const KPI = ({ config: _config }: { config?: WidgetConfig }) => (
           </Box>
         </Box>
 
-        {/* Bottom row */}
         <Box display="flex" justifyContent="space-between" alignItems="flex-end">
           <Box
             sx={{
@@ -393,9 +380,7 @@ export const KPI = ({ config: _config }: { config?: WidgetConfig }) => (
   </Box>
 );
 
-/* ============================================================
-   TABLE WIDGET
-   ============================================================ */
+//table
 
 export const TableWidget = ({ config }: { config?: WidgetConfig }) => (
   <Box height="100%" display="flex" flexDirection="column" gap={1}>
@@ -462,9 +447,7 @@ export const TableWidget = ({ config }: { config?: WidgetConfig }) => (
   </Box>
 );
 
-/* ============================================================
-   METRICS WIDGET — Beautiful cards with sparklines & progress
-   ============================================================ */
+//metrics
 
 interface MetricItem {
   label: string;
@@ -565,7 +548,6 @@ export const MetricsWidget = ({ config: _config }: { config?: WidgetConfig }) =>
           },
         }}
       >
-        {/* Icon pill */}
         <Box
           sx={{
             width: 36,
@@ -582,7 +564,6 @@ export const MetricsWidget = ({ config: _config }: { config?: WidgetConfig }) =>
           {item.icon}
         </Box>
 
-        {/* Label + progress */}
         <Box flex={1} minWidth={0}>
           <Box display="flex" justifyContent="space-between" alignItems="baseline" mb={0.4}>
             <Typography
@@ -630,7 +611,6 @@ export const MetricsWidget = ({ config: _config }: { config?: WidgetConfig }) =>
           <MiniBar value={item.progress} color={item.color} />
         </Box>
 
-        {/* Sparkline */}
         <Box flexShrink={0} sx={{ opacity: 0.85 }}>
           <Sparkline
             data={item.sparkData}

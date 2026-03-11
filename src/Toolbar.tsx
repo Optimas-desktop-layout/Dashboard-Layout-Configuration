@@ -121,10 +121,10 @@ const Toolbar = ({ onAddWidget, onSave, onLoadTemplate, onSaveAsTemplate, onClea
             <Button
               color="inherit"
               onClick={onToggleMode}
-              startIcon={editMode ? <EditIcon /> : <VisibilityIcon />}
+              startIcon={editMode ? <VisibilityIcon /> : <EditIcon /> }
               sx={buttonStyle}
             >
-              {editMode ? 'Edit Mode' : 'View Mode'}
+              {editMode ?  'View Mode' : 'Edit Mode'}
             </Button>
           </Box>
         </MuiToolbar>
