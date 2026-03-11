@@ -99,7 +99,7 @@ body {
   left: 20px;
   right: 20px;
   bottom: 20px;
-  background-size: 40px 40px;
+  background-size: calc(100% / 12) 40px;
   background-image: 
     linear-gradient(to right, #d1d5db 1px, transparent 1px),
     linear-gradient(to bottom, #d1d5db 1px, transparent 1px);
@@ -314,16 +314,33 @@ body {
   background: #e2e8f0;
 }
 
-/* @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+@media (min-width: 768px) and (max-width: 1180px) and (orientation: portrait) {
  .react-grid-layout {
     display: flex !important;
     flex-wrap: wrap;
+    height: auto !important;
+  }
+
+  .react-grid-item.widget{
+    width: 100% !important;
+    position: relative !important;
+    transform: none !important;
+    margin-top: 1rem !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1180px) and (orientation: landscape) {
+ .react-grid-layout {
+    display: flex !important;
+    flex-wrap: wrap;
+    height: auto !important;
   }
 
   .react-grid-item {
     position: relative !important;
     transform: none !important;
-    width: 50% !important;
+    width: 48% !important;
+    margin: 1rem 1rem 0 0 !important;
   }
 }
 
@@ -333,6 +350,7 @@ body {
     width: 100% !important;
     position: relative !important;
     transform: none !important;
+    margin-top: 1rem !important;
   }
   
-} */
+}
