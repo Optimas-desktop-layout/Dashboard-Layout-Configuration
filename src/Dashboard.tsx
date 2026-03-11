@@ -1,4 +1,4 @@
-import { useRef, MouseEvent, useState } from "react";
+import { useRef, MouseEvent, useState, useMemo } from "react";
 import { Responsive } from "react-grid-layout";
 import { WidthProvider } from "react-grid-layout/legacy";
 import {
@@ -101,7 +101,9 @@ export const Dashboard = ({
     });
   };
 
-  const generateLayoutForBreakpoint = (breakpointCols: number): Array<{
+  const generateLayoutForBreakpoint = (
+    breakpointCols: number,
+  ): Array<{
     i: string;
     x: number;
     y: number;
@@ -191,13 +193,16 @@ export const Dashboard = ({
       });
   };
 
-  const layouts = {
-    lg: generateLayoutForBreakpoint(cols.lg),
-    md: generateLayoutForBreakpoint(cols.md),
-    sm: generateLayoutForBreakpoint(cols.sm),
-    xs: generateLayoutForBreakpoint(cols.xs),
-    xxs: generateLayoutForBreakpoint(cols.xxs),
-  };
+  const layouts = useMemo(
+    () => ({
+      lg: generateLayoutForBreakpoint(cols.lg),
+      md: generateLayoutForBreakpoint(cols.md),
+      sm: generateLayoutForBreakpoint(cols.sm),
+      xs: generateLayoutForBreakpoint(cols.xs),
+      xxs: generateLayoutForBreakpoint(cols.xxs),
+    }),
+    [layout, editMode],
+  );
 
   const persistDesktopLayout = (currentLayout: any) => {
     if (!editMode) return;
@@ -236,6 +241,7 @@ export const Dashboard = ({
         layouts={layouts}
         breakpoints={breakpoints}
         cols={cols}
+        measureBeforeMount={true}
         rowHeight={LAYOUT_CONSTRAINTS.ROW_HEIGHT}
         margin={LAYOUT_CONSTRAINTS.MARGIN}
         onBreakpointChange={(breakpoint: string) => {
@@ -255,7 +261,7 @@ export const Dashboard = ({
         preventCollision={false}
         compactType="vertical"
         allowOverlap={false}
-        useCSSTransforms={false}
+        useCSSTransforms={true}
       >
         {layout
           .filter((w: Widget) => w?.id != null)
@@ -298,9 +304,11 @@ export const Dashboard = ({
                       }}
                     >
                       {widget.name}{" "}
-                    { editMode && <span style={{ fontSize: "0.75rem", opacity: 0.8 }}>
-                        ({widget.position.w}×{widget.position.h})
-                      </span>}
+                      {editMode && (
+                        <span style={{ fontSize: "0.75rem", opacity: 0.8 }}>
+                          ({widget.position.w}×{widget.position.h})
+                        </span>
+                      )}
                     </Typography>
                     {editMode && (
                       <Box
