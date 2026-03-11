@@ -29,6 +29,14 @@ const ResponsiveGridLayout = WidthProvider(
   Responsive,
 ) as unknown as React.ComponentType<any>;
 
+const getBreakpointForWidth = (width: number) => {
+  if (width >= 1200) return "lg";
+  if (width >= 996) return "md";
+  if (width >= 768) return "sm";
+  if (width >= 480) return "xs";
+  return "xxs";
+};
+
 interface DashboardProps {
   layout: Widget[];
   onLayoutChange: (layout: Widget[]) => void;
@@ -53,6 +61,11 @@ export const Dashboard = ({
   editMode,
 }: DashboardProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const currentBreakpointRef = useRef(
+    typeof window === "undefined"
+      ? "lg"
+      : getBreakpointForWidth(window.innerWidth),
+  );
   const [menuAnchor, setMenuAnchor] = useState<{
     element: HTMLElement;
     widgetId: number;
@@ -69,12 +82,26 @@ export const Dashboard = ({
   const cols = {
     lg: LAYOUT_CONSTRAINTS.TOTAL_COLUMNS,
     md: LAYOUT_CONSTRAINTS.TOTAL_COLUMNS,
-    sm: LAYOUT_CONSTRAINTS.TOTAL_COLUMNS,
-    xs: LAYOUT_CONSTRAINTS.TOTAL_COLUMNS,
-    xxs: LAYOUT_CONSTRAINTS.TOTAL_COLUMNS,
+    sm: 2,
+    xs: 1,
+    xxs: 1,
   };
 
-  const generateLayoutForBreakpoint = (): Array<{
+  const overlapsLayoutItem = (
+    items: Array<{ x: number; y: number; w: number; h: number }>,
+    candidate: { x: number; y: number; w: number; h: number },
+  ) => {
+    return items.some((item) => {
+      return !(
+        candidate.x + candidate.w <= item.x ||
+        item.x + item.w <= candidate.x ||
+        candidate.y + candidate.h <= item.y ||
+        item.y + item.h <= candidate.y
+      );
+    });
+  };
+
+  const generateLayoutForBreakpoint = (breakpointCols: number): Array<{
     i: string;
     x: number;
     y: number;
@@ -82,35 +109,99 @@ export const Dashboard = ({
     h: number;
     static?: boolean;
   }> => {
+    const sourceCols = LAYOUT_CONSTRAINTS.TOTAL_COLUMNS;
+    const placedItems: Array<{
+      i: string;
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+      static?: boolean;
+    }> = [];
+
     return layout
       .filter((item: Widget) => item?.id != null)
-      .map((widget: Widget) => ({
-        i: widget.id.toString(),
-        x: widget.position.x,
-        y: widget.position.y,
-        w: widget.position.w,
-        h: widget.position.h,
-        static: !editMode || widget.locked || false,
-      }));
+      .sort((a, b) => {
+        if (a.position.y !== b.position.y) return a.position.y - b.position.y;
+        return a.position.x - b.position.x;
+      })
+      .map((widget: Widget) => {
+        const scaledWidth =
+          breakpointCols === sourceCols
+            ? widget.position.w
+            : Math.max(
+                1,
+                Math.min(
+                  breakpointCols,
+                  Math.round((widget.position.w / sourceCols) * breakpointCols),
+                ),
+              );
+        const scaledX =
+          breakpointCols === sourceCols
+            ? widget.position.x
+            : Math.min(
+                Math.max(
+                  0,
+                  Math.round((widget.position.x / sourceCols) * breakpointCols),
+                ),
+                Math.max(0, breakpointCols - scaledWidth),
+              );
+
+        let nextX = scaledX;
+        let nextY = 0;
+
+        for (let y = 0; y < 200; y += 1) {
+          let placed = false;
+
+          for (
+            let x = 0;
+            x <= Math.max(0, breakpointCols - scaledWidth);
+            x += 1
+          ) {
+            const preferredX = y === 0 && x === 0 ? nextX : x;
+            const candidate = {
+              x: preferredX,
+              y,
+              w: scaledWidth,
+              h: widget.position.h,
+            };
+
+            if (!overlapsLayoutItem(placedItems, candidate)) {
+              nextX = preferredX;
+              nextY = y;
+              placed = true;
+              break;
+            }
+          }
+
+          if (placed) break;
+        }
+
+        const item = {
+          i: widget.id.toString(),
+          x: nextX,
+          y: nextY,
+          w: scaledWidth,
+          h: widget.position.h,
+          static: !editMode || widget.locked || false,
+        };
+
+        placedItems.push(item);
+        return item;
+      });
   };
 
   const layouts = {
-    lg: generateLayoutForBreakpoint(),
-    md: generateLayoutForBreakpoint(),
-    sm: generateLayoutForBreakpoint(),
-    xs: generateLayoutForBreakpoint(),
-    xxs: generateLayoutForBreakpoint(),
+    lg: generateLayoutForBreakpoint(cols.lg),
+    md: generateLayoutForBreakpoint(cols.md),
+    sm: generateLayoutForBreakpoint(cols.sm),
+    xs: generateLayoutForBreakpoint(cols.xs),
+    xxs: generateLayoutForBreakpoint(cols.xxs),
   };
 
-const getMatchedSize = (w: number, h: number): string => {
-for (const [sizeName, dims] of Object.entries(LAYOUT_CONSTRAINTS.WIDGET_SIZES)) {
-if (dims.w === w && dims.h === h) return sizeName;
-}
-return "custom";
-};
-
-  const handleLayoutChange = (currentLayout: any) => {
+  const persistDesktopLayout = (currentLayout: any) => {
     if (!editMode) return;
+    if (!["lg", "md"].includes(currentBreakpointRef.current)) return;
 
     const updated = currentLayout
       .map((item: any) => {
@@ -125,7 +216,7 @@ return "custom";
         return {
           ...original,
           position: { x: item.x, y: item.y, w: item.w, h: item.h },
-          size: sizeChanged ? getMatchedSize(item.w, item.h) : original.size,
+          size: sizeChanged ? "custom" : original.size,
         };
       })
       .filter((item: Widget | null): item is Widget => item !== null);
@@ -133,7 +224,7 @@ return "custom";
     onLayoutChange(updated);
   };
 
-  const allSizes: string[] = ["small", "medium", "large", "custom"];
+  const allSizes: string[] = ["small", "medium", "large", "default", "custom"];
 
   return (
     <div
@@ -147,21 +238,29 @@ return "custom";
         cols={cols}
         rowHeight={LAYOUT_CONSTRAINTS.ROW_HEIGHT}
         margin={LAYOUT_CONSTRAINTS.MARGIN}
-        onLayoutChange={handleLayoutChange}
+        onBreakpointChange={(breakpoint: string) => {
+          currentBreakpointRef.current = breakpoint;
+        }}
         onResizeStart={() => setIsResizing(true)}
-        onResizeStop={() => setIsResizing(false)}
+        onResizeStop={(currentLayout: any) => {
+          setIsResizing(false);
+          persistDesktopLayout(currentLayout);
+        }}
+        onDragStop={(currentLayout: any) => {
+          persistDesktopLayout(currentLayout);
+        }}
         draggableHandle=".widget-header"
         isResizable={editMode}
         isDraggable={editMode}
         preventCollision={false}
-        compactType={"vertical"}
+        compactType="vertical"
         allowOverlap={false}
+        useCSSTransforms={false}
       >
         {layout
           .filter((w: Widget) => w?.id != null)
           .map((widget: Widget) => {
-            const matchedSize = getMatchedSize(widget.position.w, widget.position.h);
-            const currentSize = matchedSize;
+            const currentSize = widget.size?.toLowerCase() || "default";
 
             return (
               <div

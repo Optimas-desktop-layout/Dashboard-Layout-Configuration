@@ -107,6 +107,18 @@ body {
   z-index: 1;
 }
 
+@media (max-width: 767px) {
+  .grid-container.edit-mode::after {
+    background-size: 100% 40px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 995px) {
+  .grid-container.edit-mode::after {
+    background-size: calc(100% / 2) 40px;
+  }
+}
+
 .grid-container.edit-mode.resizing::after {
   background-image: 
     linear-gradient(to right, #6366f1 1px, transparent 1px),
@@ -301,3 +313,26 @@ body {
 .modal-actions .cancel:hover {
   background: #e2e8f0;
 }
+
+/* @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+ .react-grid-layout {
+    display: flex !important;
+    flex-wrap: wrap;
+  }
+
+  .react-grid-item {
+    position: relative !important;
+    transform: none !important;
+    width: 50% !important;
+  }
+}
+
+
+@media (max-width: 767px) {
+  .react-grid-item.widget{
+    width: 100% !important;
+    position: relative !important;
+    transform: none !important;
+  }
+  
+} */
