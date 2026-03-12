@@ -76,32 +76,109 @@ const barXLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const barSalesData = [420, 630, 510, 780, 920, 860, 340];
 const barReturnsData = [80, 120, 95, 140, 160, 130, 60];
 
-export const BarChart = ({ config }: { config?: WidgetConfig }) => (
-  <Box height="100%" display="flex" flexDirection="column" gap={1.5}>
-    <Box display="flex" gap={2} flexWrap="wrap">
-      <Typography
-        variant="caption"
-        sx={{ bgcolor: 'action.hover', px: 1.5, py: 0.5, borderRadius: 1 }}
-      >
-        Type: {config?.graphType || 'Bar'}
-      </Typography>
-      <Typography
-        variant="caption"
-        sx={{ bgcolor: 'action.hover', px: 1.5, py: 0.5, borderRadius: 1 }}
-      >
-        Range: {config?.dateRange || 'Last 7 days'}
-      </Typography>
-    </Box>
+const TOTAL = 1000;
+const barOtherData = barXLabels.map(
+  (_, i) => Math.max(0, TOTAL - barSalesData[i] - barReturnsData[i]),
+);
+
+export const BarChart = () => (
+  <Box
+    height="400px"
+    display="flex"
+    flexDirection="column"
+    gap={1.5}
+    sx={{
+      bgcolor: '#0d1b3e',   
+      borderRadius: 3,
+      p: 3,
+    }}
+  >
     <Box flex={1} minHeight={0}>
+      <svg width="0" height="0">
+        <defs>
+          <linearGradient id="salesGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor="#16a34a" />
+            <stop offset="100%" stopColor="#4ade80" />
+          </linearGradient>
+          <linearGradient id="returnsGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor="#ca8a04" />
+            <stop offset="100%" stopColor="#facc15" />
+          </linearGradient>
+          <linearGradient id="otherGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor="#dc2626" />
+            <stop offset="100%" stopColor="#f87171" />
+          </linearGradient>
+        </defs>
+      </svg>
       <MuiBarChart
-        xAxis={[{ scaleType: 'band', data: barXLabels }]}
-        series={[
-          { data: barSalesData, label: 'Sales', color: '#6366f1' },
-          { data: barReturnsData, label: 'Returns', color: '#06b6d4' },
+        xAxis={[
+          {
+            scaleType: 'band',
+            data: barXLabels,
+            tickLabelStyle: { fill: '#a0aec0', fontSize: 12 },
+            categoryGapRatio: 0.8,
+          },
         ]}
-        borderRadius={6}
-        sx={{ width: '100%', height: '100%' }}
+        yAxis={[
+          {
+            tickLabelStyle: { fill: '#a0aec0', fontSize: 12 },
+            tickNumber: 5,
+            valueFormatter: (v: number) => `${(v / TOTAL) * 100}%`,
+          },
+        ]}
+        series={[
+          {
+            data: barSalesData,
+            label: 'Sales',
+            color: 'url(#salesGradient)',   
+            stack: 'total',
+          },
+          {
+            data: barReturnsData,
+            label: 'Returns',
+            color: 'url(#returnsGradient)',  
+            stack: 'total',
+          },
+          {
+            data: barOtherData,
+            label: 'Other',
+            color: 'url(#otherGradient)', 
+            stack: 'total',
+          },
+        ]}
+        borderRadius={50}
+        grid={{ horizontal: true }}
+        sx={{
+          width: '100%',
+          height: '100%',
+          '& .MuiChartsGrid-line': {
+            stroke: 'rgba(255,255,255,0.12)',
+            strokeDasharray: '4 4',
+          },
+          '& .MuiChartsAxis-line': { stroke: 'transparent' },
+          '& .MuiChartsAxis-tick': { stroke: 'transparent' },
+          '& .MuiChartsLegend-root': {
+            display: 'none',
+          },
+        }}
       />
+    </Box>
+
+    <Box display="flex" justifyContent="center" gap={3} mt={4}>
+      {[
+        { label: 'Sales', color: '#22c55e' },
+        { label: 'Returns', color: '#eab308' },
+        { label: 'Other', color: '#f43f5e' },
+      ].map(({ label, color }) => (
+        <Box key={label} display="flex" alignItems="center" gap={0.75}>
+          <Box
+            sx={{ width: 14, height: 14, borderRadius: '3px', bgcolor: color }}
+          />
+          <Typography variant="caption" sx={{ color: '#ffffff', fontSize: 12 }}>
+            {label}
+          </Typography>
+        </Box>
+      ))}
     </Box>
   </Box>
 );

@@ -28,7 +28,7 @@ export const WidgetContent = ({ widget }: WidgetContentProps) => {
   }
 
   const components: Record<string, React.ReactElement> = {
-    BarChart: <BarChart config={widget.config} />,
+    BarChart: <BarChart />,
     LineChart: <LineChart config={widget.config} />,
     PieChart: <PieChart config={widget.config} />,
     KPI: <KPI config={widget.config} />,
