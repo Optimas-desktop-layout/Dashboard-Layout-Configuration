@@ -2,7 +2,7 @@
 export const LAYOUT_CONSTRAINTS = {
   TOTAL_COLUMNS: 12,
   ROW_HEIGHT: 40,
-  MARGIN: [10,10] as [number, number],
+  MARGIN: [5,5] as [number, number],
   
   // Widget Size Constraints
   MIN_WIDTH: 2,  
