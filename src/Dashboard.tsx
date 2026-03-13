@@ -287,46 +287,26 @@ export const Dashboard = ({
                       display: "flex",
                       justifyContent: "space-between",
                       alignItems: "center",
-                      p: 1,
-                      bgcolor: widget.locked ? "grey.600" : "primary.main",
+                      p: 1.5,
+                      bgcolor: "primary.main",
                       color: "white",
-                      cursor: editMode && !widget.locked ? "move" : "default",
+                      cursor: editMode ? "move" : "default",
                     }}
                   >
                     <Typography
-                      variant="subtitle1"
+                      variant="subtitle2"
                       sx={{
+                        fontWeight: 500,
                         overflow: "hidden",
                         textOverflow: "ellipsis",
                         whiteSpace: "nowrap",
                         flex: 1,
-                        mr: 1,
                       }}
                     >
-                      {widget.name}{" "}
-                      {editMode && (
-                        <span style={{ fontSize: "0.75rem", opacity: 0.8 }}>
-                          ({widget.position.w}×{widget.position.h})
-                        </span>
-                      )}
+                      {widget.name}
                     </Typography>
                     {editMode && (
-                      <Box
-                        sx={{ display: "flex", gap: 0.5, alignItems: "center" }}
-                      >
-                        <IconButton
-                          size="small"
-                          onClick={(e: MouseEvent<HTMLButtonElement>) => {
-                            e.stopPropagation();
-                            setMenuAnchor({
-                              element: e.currentTarget,
-                              widgetId: widget.id,
-                            });
-                          }}
-                          sx={{ color: "white" }}
-                        >
-                          <SettingsIcon fontSize="small" />
-                        </IconButton>
+                      <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                         <Select
                           value={currentSize}
                           onChange={(e: SelectChangeEvent) =>
@@ -336,8 +316,8 @@ export const Dashboard = ({
                           size="small"
                           sx={{
                             bgcolor: "white",
-                            minWidth: 90,
-                            fontSize: "0.875rem",
+                            minWidth: 80,
+                            fontSize: "0.75rem",
                           }}
                         >
                           {allSizes.map((sz: string) => (
@@ -348,11 +328,24 @@ export const Dashboard = ({
                         </Select>
                         <IconButton
                           size="small"
+                          onClick={(e: MouseEvent<HTMLButtonElement>) => {
+                            e.stopPropagation();
+                            setMenuAnchor({
+                              element: e.currentTarget,
+                              widgetId: widget.id,
+                            });
+                          }}
+                          sx={{ color: "white", p: 0.5 }}
+                        >
+                          <SettingsIcon fontSize="small" />
+                        </IconButton>
+                        <IconButton
+                          size="small"
                           onClick={(e: MouseEvent) => {
                             e.stopPropagation();
                             onRemoveWidget(widget.id);
                           }}
-                          sx={{ color: "white" }}
+                          sx={{ color: "white", p: 0.5 }}
                         >
                           <CloseIcon fontSize="small" />
                         </IconButton>
