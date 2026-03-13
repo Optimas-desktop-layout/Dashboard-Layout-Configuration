@@ -244,6 +244,7 @@ export const Dashboard = ({
         measureBeforeMount={true}
         rowHeight={LAYOUT_CONSTRAINTS.ROW_HEIGHT}
         margin={LAYOUT_CONSTRAINTS.MARGIN}
+        containerPadding={[0,0]}
         onBreakpointChange={(breakpoint: string) => {
           currentBreakpointRef.current = breakpoint;
         }}
